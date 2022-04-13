@@ -1,23 +1,19 @@
-import { useCallback  } from "react";
+import { useCallback, createRef } from "react";
+import { useScreenshot } from "use-react-screenshot";
+
 import { useDropzone } from "react-dropzone";
-import { useLocation } from "react-router-dom";
 import usePanZoom from "use-pan-and-zoom";
 
 import "../styles/photo-editor.scss";
 
 const PhotoEditor = () => {
-  const { transform, panZoomHandlers, setContainer , setPan } = usePanZoom({});
-  const API_KEY = "ed302f5b3c3c44d2bd1fce06f63792e2";
-const location = useLocation();
-const search = new URLSearchParams(location.search);
+  const { transform, panZoomHandlers, setContainer, setPan } = usePanZoom({});
 
- const url = ` https://api.apiflash.com/v1/urltoimage?access_key=${API_KEY}&url=${search}&full_page`;
-
-console.log(url);
-
+  const ref = createRef(null);
+  const [image, takeScreenshot] = useScreenshot();
+  const getImage = () => takeScreenshot(ref.current);
 
   const onDrop = useCallback((droppedFiles) => {
-    console.log(droppedFiles);
   }, []);
 
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
@@ -36,11 +32,9 @@ console.log(url);
     />
   );
 
-
-
   return (
     <div className="App">
-      <div className="photo-editor">
+      <div className="photo-editor" ref={ref}>
         <div className="photo-viewer">
           <div
             className="image-outer-container"
@@ -54,7 +48,7 @@ console.log(url);
             </div>
           </div>
         </div>
-        <div>
+        {/* <div>
           {acceptedFiles.length > 0 && (
             <a
               href={selectedImage.props.src}
@@ -63,14 +57,13 @@ console.log(url);
               <button className="button"> Download Photo </button>
             </a>
           )}
-        </div>
+        </div> */}
         <div>
           {acceptedFiles.length > 0 && (
-            <a
-              href={selectedImage.props.src}
-              download={selectedImage.props.src}
-            >
-              <button className="button"> Download ScreenShot </button>
+            <a href={image} download={image}>
+              <button className="button" onClick={getImage}>
+                Download ScreenShot
+              </button>
             </a>
           )}
         </div>
